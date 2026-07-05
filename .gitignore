@@ -1,0 +1,15 @@
+# Секретные данные
+webhook.txt
+
+# Генерируемые файлы
+tasks_report.xlsx
+*.xlsx
+
+# Виртуальное окружение
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
