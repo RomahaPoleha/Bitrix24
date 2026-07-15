@@ -1,4 +1,11 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
 # Секретные данные
+webhook.enc
 webhook.txt
 
 # Генерируемые файлы
@@ -8,8 +15,19 @@ tasks_report.xlsx
 # Виртуальное окружение
 .venv/
 venv/
+env/
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
