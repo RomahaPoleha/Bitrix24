@@ -526,7 +526,7 @@ def save_to_excel(tasks, filename="tasks_report.xlsx"):
                 task.get("title", ""),
                 created_vl.strftime("%d.%m.%Y %H:%M"),
                 closed_vl.strftime("%d.%m.%Y %H:%M"),
-                format_minutes(working_mins),
+                working_mins,
                 get_task_url(task["id"], task.get("responsibleId", "1"))
             ]
         else:
@@ -546,6 +546,12 @@ def save_to_excel(tasks, filename="tasks_report.xlsx"):
 
     for col, width in zip(["A", "B", "C", "D", "E"], [50, 20, 20, 18, 70]):
         ws.column_dimensions[col].width = width
+
+    # Форматируем колонку "Время выполнения" как число
+    for row in ws.iter_rows(min_row=2, min_col=4, max_col=4):
+        for cell in row:
+            if isinstance(cell.value, int):
+                cell.number_format = '0'
 
     save_path = os.path.join(SCRIPT_DIR, filename)
     wb.save(save_path)
