@@ -6,10 +6,10 @@ import uuid
 import socket
 import base64
 import hashlib
-from datetime import datetime, timedelta, date as date_type, time as time_type
+from datetime import datetime, timedelta, time as time_type
 from zoneinfo import ZoneInfo
 import tkinter as tk
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox
 from cryptography.fernet import Fernet
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font, Alignment
@@ -522,11 +522,15 @@ def save_to_excel(tasks, filename="tasks_report.xlsx"):
         if is_task_closed(task) and closed_vl:
             working_mins = calculate_working_minutes(created, closed)
             is_long = working_mins > LONG_TASK_THRESHOLD
+
+            # Конвертируем минуты в формат времени Excel (доля суток)
+            excel_time = working_mins / (24 * 60) if working_mins > 0 else 0
+
             row = [
                 task.get("title", ""),
                 created_vl.strftime("%d.%m.%Y %H:%M"),
                 closed_vl.strftime("%d.%m.%Y %H:%M"),
-                working_mins,
+                excel_time,  # ← время как доля суток
                 get_task_url(task["id"], task.get("responsibleId", "1"))
             ]
         else:
@@ -547,11 +551,12 @@ def save_to_excel(tasks, filename="tasks_report.xlsx"):
     for col, width in zip(["A", "B", "C", "D", "E"], [50, 20, 20, 18, 70]):
         ws.column_dimensions[col].width = width
 
-    # Форматируем колонку "Время выполнения" как число
+    # Форматируем колонку "Время выполнения" как время
     for row in ws.iter_rows(min_row=2, min_col=4, max_col=4):
         for cell in row:
-            if isinstance(cell.value, int):
-                cell.number_format = '0'
+            if isinstance(cell.value, (int, float)) and cell.value > 0:
+                # Формат: часы и минуты, например "3 ч 45 мин"
+                cell.number_format = 'h" ч "mm" мин"'
 
     save_path = os.path.join(SCRIPT_DIR, filename)
     wb.save(save_path)
